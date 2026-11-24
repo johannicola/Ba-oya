@@ -1,0 +1,152 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>BañoYa - baños públicos cercanos en Lima</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
+<style>
+:root{--bg:#F6F8F7;--sf:#fff;--ink:#0E1B1A;--mu:#4A5A58;--ln:#C5D0CD;--map:#E8EEEB;--st:#fff;--pk:#CFE3D4;--ac:#0B7A75;--act:#fff;--ch:#EEF1F0;--ok:#DDF1EE;--okt:#064E4A;--wn:#FBE9D5;--wnt:#6B3500;--me:#1A73E8;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0B1211;--sf:#16201F;--ink:#EAF1EF;--mu:#A9B8B5;--ln:#3A4A47;--map:#1B2624;--st:#2A3835;--pk:#1F3A2B;--ac:#3DBDB5;--act:#06302D;--ch:#223130;--ok:#12403C;--okt:#BDF0EA;--wn:#4A3314;--wnt:#FFD9A8;--me:#6FA8FF;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0B1211;--sf:#16201F;--ink:#EAF1EF;--mu:#A9B8B5;--ln:#3A4A47;--map:#1B2624;--st:#2A3835;--pk:#1F3A2B;--ac:#3DBDB5;--act:#06302D;--ch:#223130;--ok:#12403C;--okt:#BDF0EA;--wn:#4A3314;--wnt:#FFD9A8;--me:#6FA8FF;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font:400 16px/1.4 Inter,system-ui,sans-serif;display:flex;justify-content:center}
+#app{position:relative;width:100%;max-width:430px;height:100%;overflow:hidden;background:var(--sf)}
+#map{position:absolute;left:0;top:0;width:100%;height:100%}
+button{font:inherit;color:inherit;cursor:pointer}
+.bg{fill:var(--map)}.pk{fill:var(--pk)}.stt{stroke:var(--st);stroke-width:16;fill:none}
+.pf{fill:var(--ac);stroke:var(--sf);stroke-width:3}.pu{fill:var(--sf);stroke:var(--ac);stroke-width:3;stroke-dasharray:5 4}
+.pt{font:700 14px Inter,sans-serif;fill:var(--act)}.pt.pq{fill:var(--ac)}
+.m1{fill:var(--me);opacity:.18}.m2{fill:var(--me);stroke:var(--sf);stroke-width:3}
+.rt{stroke:var(--ac);stroke-width:6;stroke-linecap:round;stroke-linejoin:round;fill:none}.pl{stroke:var(--ac);stroke-width:3;stroke-linecap:round}
+.top{position:absolute;left:16px;right:16px;top:16px}
+.sb{height:52px;background:var(--sf);border-radius:16px;box-shadow:0 2px 10px rgba(0,0,0,.2);display:flex;align-items:center;gap:12px;padding:0 16px}
+.sb input{flex:1;border:0;outline:0;background:none;color:var(--ink);font:inherit}
+.chips{display:flex;gap:8px;margin-top:12px}
+.chip{height:44px;padding:0 16px;border-radius:22px;border:1px solid var(--ln);background:var(--sf);font-weight:600;font-size:14px}
+.chip[aria-pressed=true]{background:var(--ac);color:var(--act);border-color:var(--ac)}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:var(--sf);border-radius:24px 24px 0 0;padding:16px 16px 20px;box-shadow:0 -2px 12px rgba(0,0,0,.2);max-height:52%;overflow:auto;box-sizing:border-box}
+.sheet.tall{max-height:66%}
+.hd{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.t0{font-size:22px;font-weight:700;margin:0}.t1{font-size:18px;font-weight:700}.t2{font-size:13px;color:var(--mu);margin:2px 0 4px}
+.btn3{height:44px;padding:0 16px 0 12px;border:0;border-radius:22px;background:var(--ac);color:var(--act);font-weight:600;font-size:14px;display:flex;align-items:center;gap:6px}
+.row{display:flex;align-items:center;gap:12px;width:100%;min-height:64px;padding:8px 0;background:none;border:0;text-align:left}
+.num{flex:none;width:36px;height:36px;border-radius:18px;background:var(--ac);color:var(--act);display:flex;align-items:center;justify-content:center;font-weight:700}
+.num.nq{background:var(--sf);color:var(--ac);border:2px dashed var(--ac);box-sizing:border-box}
+.rm{flex:1}.rn{display:block;font-weight:600}.rs{display:block;font-size:13px;color:var(--mu)}.rd{font-weight:700;font-size:15px}
+.note{font-size:12px;color:var(--mu);margin:8px 0 0}
+.tags{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 6px}
+.tag{padding:8px 12px;border-radius:16px;background:var(--ch);font:600 13px Inter,sans-serif}.tag.ok{background:var(--ok);color:var(--okt)}.tag.wn{background:var(--wn);color:var(--wnt)}
+.inf{display:flex;justify-content:space-between;gap:12px;padding:14px 0;border-bottom:1px solid var(--ln);font-size:14px}.inf span:first-child{color:var(--mu)}.inf span:last-child{font-weight:600;text-align:right}
+.btn{width:100%;height:52px;margin-top:16px;border:0;border-radius:14px;background:var(--ac);color:var(--act);font-weight:700}
+.btn2{width:100%;height:48px;border:1px solid var(--ln);border-radius:14px;background:var(--sf);font-weight:600;font-size:14px}
+.two{display:flex;gap:8px;margin-top:10px}.two>*{flex:1}
+.back{position:absolute;left:16px;top:16px;width:48px;height:48px;border-radius:24px;border:0;background:var(--sf);box-shadow:0 2px 10px rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center}
+label.l{display:block;font-weight:600;font-size:14px;margin:14px 0 6px}
+input[type=text],input[type=time]{box-sizing:border-box;width:100%;height:48px;padding:0 14px;border:1px solid var(--ln);border-radius:12px;background:var(--sf);color:var(--ink);font:inherit}
+.btn2[aria-pressed=true]{background:var(--ac);color:var(--act);border-color:var(--ac)}
+.ck{display:flex;align-items:center;gap:12px;min-height:48px;margin-top:8px}.ck input{width:22px;height:22px}
+.err{color:var(--wnt);background:var(--wn);border-radius:8px;font-size:13px;margin-top:6px}.err:empty{display:none}.err{padding:6px 10px}
+.full{position:absolute;inset:0;background:var(--sf);padding:56px 16px 24px;overflow:auto}
+.chk{width:72px;height:72px;border-radius:36px;background:var(--ac);margin:0 auto 20px;display:flex;align-items:center;justify-content:center}
+.c{text-align:center}.stp{display:flex;align-items:center;gap:12px;min-height:48px;font-size:14px}
+.stp .num{width:28px;height:28px;border-radius:14px;font-size:14px}
+.card{display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid var(--ln);margin-top:16px}
+h2{font-size:16px;margin:20px 0 4px}
+#ui{position:absolute;inset:0;z-index:1000;pointer-events:none}#ui>*{pointer-events:auto}
+.mk{width:34px;height:34px;border-radius:50%;background:var(--ac);color:var(--act);border:3px solid var(--sf);box-sizing:border-box;display:flex;align-items:center;justify-content:center;font:700 14px Inter,sans-serif;box-shadow:0 1px 6px rgba(0,0,0,.35)}
+.mk.q{background:var(--sf);color:var(--ac);border:3px dashed var(--ac)}.mk.s{transform:scale(1.25)}
+.attr{position:absolute;top:0;right:0;z-index:1001;font-size:10px;padding:1px 6px;background:var(--sf);color:var(--mu);opacity:.9;border-radius:0 0 0 6px}
+.top{top:26px}.back{top:34px}
+</style></head><body><div id="app"><div id="map"></div><div class="attr">© OpenStreetMap contributors</div><div id="ui"></div></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<script>
+(function(){
+var KEY="banoya-v2",st={scr:"map",me:{la:-12.1219,ln:-77.0297},gps:0,gn:"",f:{free:0,acc:0},q:"",sel:"",nav:0,msg:"",rep:0,dr:null,rt:null,osm:[],user:[],note:"",last:null};
+try{JSON.parse(localStorage.getItem(KEY)||"[]").forEach(function(b){if(b&&typeof b.n==="string"&&isFinite(b.la)&&isFinite(b.ln)){b.u=1;b.k=+b.k||0;st.user.push(b)}})}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(st.user))}catch(e){}}
+var $=function(s){return document.querySelector(s)};
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return"&#"+c.charCodeAt(0)+";"})}
+function hav(a,b){var r=Math.PI/180,x=Math.sin((b.la-a.la)*r/2),y=Math.sin((b.ln-a.ln)*r/2),h=x*x+Math.cos(a.la*r)*Math.cos(b.la*r)*y*y;return 12742000*Math.asin(Math.sqrt(h))}
+function dist(b){return hav(st.me,b)}
+function fm(d){return d<1000?Math.max(10,Math.round(d/10)*10)+" m":(d/1000).toFixed(1).replace(".",",")+" km"}
+function wk(d){return Math.max(1,Math.round(d/80))}
+function all(){return st.user.concat(st.osm)}
+function cur(){return all().filter(function(b){return b.id===st.sel})[0]}
+function vis(a){var q=st.q.trim().toLowerCase();return all().filter(function(b){return a||((!st.f.free||b.g===1)&&(!st.f.acc||b.a===1)&&(!q||b.n.toLowerCase().indexOf(q)>-1))}).sort(function(x,y){return dist(x)-dist(y)})}
+function cost(b){return b.g===1?"Gratis":b.g===0?"De pago":"Costo no registrado"}
+function hor(b){return b.h?esc(b.h):"Horario no registrado"}
+function ok(b){return!b.u||b.k>=3}
+var BK='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>';
+var PL='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>';
+var BACK='<button class="back" data-a="back" aria-label="Volver">'+BK+'</button>';
+var map=L.map("map",{zoomControl:false,attributionControl:false}).setView([st.me.la,st.me.ln],16);
+L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19}).addTo(map);
+var lg=L.layerGroup().addTo(map);
+function icon(h,c){return L.divIcon({className:"",html:'<div class="mk'+c+'">'+h+'</div>',iconSize:[34,34],iconAnchor:[17,17]})}
+function draw(){lg.clearLayers();var s=st.scr,b=cur();
+ if(s==="detail"&&b)L.polyline(st.rt?st.rt.pts:[[st.me.la,st.me.ln],[b.la,b.ln]],{color:"#0B7A75",weight:6,opacity:.9,dashArray:st.rt?null:"8 8"}).addTo(lg);
+ vis(s!=="map").forEach(function(p,i){L.marker([p.la,p.ln],{icon:icon(i+1,(ok(p)?"":" q")+(s==="detail"&&p.id===st.sel?" s":""))}).on("click",function(){if(st.scr!=="add")go("detail",p.id)}).addTo(lg)});
+ L.circleMarker([st.me.la,st.me.ln],{radius:9,color:"#fff",weight:3,fillColor:"#1A73E8",fillOpacity:1,interactive:false}).addTo(lg);
+ if(s==="add")L.marker([st.dr.la,st.dr.ln],{icon:icon("+"," q"),interactive:false}).addTo(lg)}
+function chip(k,t){return'<button class="chip" data-a="f" data-k="'+k+'" aria-pressed="'+(st.f[k]?"true":"false")+'">'+t+'</button>'}
+function sheetHtml(){var l=vis(),h='<div class="hd"><div><div class="t1">Cerca de ti</div><div class="t2">'+l.length+(l.length===1?" baño encontrado":" baños encontrados")+'</div></div><button class="btn3" data-a="add">'+PL+'Agregar baño</button></div>';
+ h+='<p class="t2">'+(st.gps?"Usando tu ubicación (GPS).":"Toca el mapa para indicar dónde estás.")+' Distancias en línea recta.</p>';
+ if(st.gn)h+='<p class="t2">'+st.gn+'</p>';
+ if(st.note)h+='<p class="t2">'+st.note+'</p>';
+ if(!l.length&&!st.note)h+='<p>No hay baños con esos filtros.</p>';
+ l.forEach(function(b,i){h+='<button class="row" data-a="open" data-id="'+esc(b.id)+'"><span class="num'+(ok(b)?"":" nq")+'">'+(i+1)+'</span><span class="rm"><span class="rn">'+esc(b.n)+'</span><span class="rs">'+cost(b)+(b.h?" · "+esc(b.h.slice(0,24)):"")+(ok(b)?"":" · Por verificar")+'</span></span><span class="rd">'+fm(dist(b))+'</span></button>'});
+ return h+'<p class="note">Datos de OpenStreetMap y de usuarios de esta app.</p>'}
+function uiMap(){return'<div class="top"><div class="sb"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="q" type="text" aria-label="Buscar baño por nombre" placeholder="Buscar baño por nombre" value="'+esc(st.q)+'"></div><div class="chips">'+chip("free","Gratis")+chip("acc","Accesible")+'</div></div><div class="sheet" id="sheet">'+sheetHtml()+'</div>'}
+function inf(a,b){return'<div class="inf"><span>'+a+'</span><span>'+b+'</span></div>'}
+function uiDetail(){var b=cur(),r=st.rt,d=r?r.d:dist(b)*1.3,m=r?Math.max(1,Math.round(r.t/60)):wk(d);
+ return BACK+'<div class="sheet tall"><h1 class="t0">'+esc(b.n)+'</h1><div class="t2">A '+m+' min a pie ('+fm(d)+(r?"":", aprox.")+')</div><div class="tags"><span class="tag">'+cost(b)+'</span>'+(b.a===1?'<span class="tag ok">Accesible</span>':"")+(ok(b)?"":'<span class="tag wn">Por verificar</span>')+'</div>'
+ +inf("Horario",hor(b))+inf("Accesibilidad",b.a===1?"Acceso para silla de ruedas":b.a===0?"Sin acceso adaptado":"No registrado")+inf("Fuente",b.u?(ok(b)?"Confirmado por "+b.k+" personas":b.k+" de 3 confirmaciones"):"OpenStreetMap")
+ +'<button class="btn" data-a="nav">'+(st.nav?"Terminar ruta":"Iniciar ruta a pie")+'</button>'+(st.nav?'<p class="t2">Sigue la línea marcada en el mapa. Llegas en unos '+m+' min.</p>':"")
+ +(st.rep?'<div class="two" style="flex-direction:column"><span class="t2">¿Qué problema encontraste?</span><button class="btn2" data-a="rp">Está cerrado</button><button class="btn2" data-a="rp">Está en mal estado</button><button class="btn2" data-a="rp">Ya no existe</button></div>':'<div class="two"><button class="btn2" data-a="rep">Reportar problema</button>'+(b.u?'<button class="btn2" data-a="conf">Sigue abierto</button>':"")+'</div>')
+ +'<p class="t2" role="status">'+esc(st.msg)+'</p></div>'}
+function uiAdd(){var d=st.dr;
+ return BACK+'<div class="sheet tall"><h1 class="t0">Agregar un baño</h1><div class="t2">Toca el mapa para colocar el pin donde está el baño.</div><button class="btn2" data-a="here">Usar mi ubicación</button>'
+ +'<label class="l" for="nm">Nombre o referencia</label><input id="nm" type="text" maxlength="60" placeholder="Ej. Baño del mercado, puerta 2" value="'+esc(d.n)+'"><div class="err" id="err" role="alert"></div>'
+ +'<div class="two"><div><label class="l" for="to">Abre</label><input id="to" type="time" value="'+esc(d.o)+'"></div><div><label class="l" for="te">Cierra</label><input id="te" type="time" value="'+esc(d.e)+'"></div></div>'
+ +'<div class="l" style="margin-bottom:6px">Costo</div><div class="two" style="margin-top:0"><button class="btn2" data-a="cost" data-v="1" aria-pressed="'+(d.g?"true":"false")+'">Gratis</button><button class="btn2" data-a="cost" data-v="0" aria-pressed="'+(d.g?"false":"true")+'">De pago</button></div>'
+ +'<label class="ck"><input id="ac" type="checkbox"'+(d.a?" checked":"")+'>Tiene acceso para sillas de ruedas</label><button class="btn" data-a="send">Enviar para revisión</button></div>'}
+function uiSent(){var b=cur();
+ return'<div class="full"><div class="chk"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--act)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg></div><h1 class="t0 c">Gracias por aportar</h1><p class="c t2" style="font-size:15px;margin:8px 8px 0">Tu baño ya aparece en el mapa. En esta versión se guarda solo en tu dispositivo; con un servidor lo verían todos.</p>'
+ +'<div class="card"><span class="rm"><span class="rn">'+esc(b.n)+'</span><span class="rs">'+cost(b)+" · "+hor(b)+'</span></span><span class="tag wn">Por verificar</span></div><h2>Qué pasa ahora</h2>'
+ +'<div class="stp"><span class="num">1</span>Aparece en el mapa como «Por verificar»</div><div class="stp"><span class="num">2</span>Otras personas lo confirman desde su ficha</div><div class="stp"><span class="num">3</span>Con 3 confirmaciones pasa a verificado</div>'
+ +'<button class="btn" data-a="tomap" style="margin-top:24px">Ver en el mapa</button><button class="btn2" data-a="again" style="margin-top:10px">Agregar otro baño</button></div>'}
+function render(){var s=st.scr;if(s!=="map"&&!cur()&&s!=="add")s=st.scr="map";$("#ui").innerHTML=s==="map"?uiMap():s==="detail"?uiDetail():s==="add"?uiAdd():uiSent();draw()}
+function refresh(){$("#sheet").innerHTML=sheetHtml();draw()}
+function upd(){if(st.scr==="map"&&$("#sheet"))refresh();else draw()}
+function fit(p,H){map.fitBounds(p,{paddingTopLeft:[40,70],paddingBottomRight:[40,H],maxZoom:17,animate:false})}
+function route(b){fetch("https://routing.openstreetmap.de/routed-foot/route/v1/foot/"+st.me.ln+","+st.me.la+";"+b.ln+","+b.la+"?overview=full&geometries=geojson").then(function(r){return r.json()}).then(function(j){var r=j.routes&&j.routes[0];if(r&&st.scr==="detail"&&st.sel===b.id){st.rt={pts:r.geometry.coordinates.map(function(c){return[c[1],c[0]]}),d:r.distance,t:r.duration};render()}}).catch(function(){})}
+function go(s,id){st.scr=s;if(id)st.sel=id;st.nav=0;st.msg="";st.rep=0;st.rt=null;
+ if(s==="add")st.dr={la:st.me.la,ln:st.me.ln,n:"",o:"06:00",e:"22:00",g:1,a:0};
+ render();var H=Math.round(innerHeight*.62),b=cur();
+ if(s==="detail"){fit([[st.me.la,st.me.ln],[b.la,b.ln]],H);route(b)}else if(s==="add")fit([[st.dr.la,st.dr.ln]],H)}
+function load(){st.note="Buscando baños en OpenStreetMap...";upd();var m=st.me,q='[out:json][timeout:25];nwr["amenity"="toilets"](around:2000,'+m.la+','+m.ln+');out center tags 80;';
+ fetch("https://overpass-api.de/api/interpreter",{method:"POST",body:"data="+encodeURIComponent(q)}).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(j){
+  st.osm=j.elements.filter(function(e){return e.tags&&e.tags.access!=="private"&&(e.lat||e.center)}).map(function(e){var t=e.tags,c=e.center||e;return{id:"o"+e.id,n:t.name||"Baño público sin nombre",la:c.lat,ln:c.lon,g:t.fee==="yes"?0:t.fee==="no"?1:2,a:t.wheelchair==="yes"?1:t.wheelchair==="no"?0:2,h:t.opening_hours||"",k:0}});
+  st.note=st.osm.length?"":"No hay baños registrados en OpenStreetMap a 2 km de aquí. Agrega el primero.";upd()}).catch(function(){st.note="No se pudieron cargar los baños de OpenStreetMap. Revisa tu conexión.";upd()})}
+function maybeLoad(){if(st.last&&hav(st.last,st.me)<400)return;st.last={la:st.me.la,ln:st.me.ln};load()}
+function locate(){if(!navigator.geolocation){st.gn="Tu navegador no tiene GPS. Mostramos Miraflores.";upd();return}
+ navigator.geolocation.watchPosition(function(p){var first=!st.gps;st.gps=1;st.gn="";st.me={la:p.coords.latitude,ln:p.coords.longitude};if(first&&st.scr==="map")map.setView([st.me.la,st.me.ln],17);maybeLoad();upd()},function(){if(!st.gps){st.gn="No pudimos obtener tu ubicación; mostramos Miraflores como ejemplo.";upd()}},{enableHighAccuracy:true,maximumAge:10000})}
+function send(){var d=st.dr,r=$("#err");
+ if(!d.n.trim()){r.textContent="Escribe un nombre o una referencia para ubicarlo.";$("#nm").focus();return}
+ if(!d.o||!d.e){r.textContent="Indica la hora de apertura y de cierre.";return}
+ var b={id:"u"+Date.now(),n:d.n.trim().slice(0,60),la:d.la,ln:d.ln,g:d.g,a:d.a,h:d.o+" a "+d.e,k:0,u:1};st.user.push(b);save();st.sel=b.id;st.scr="sent";render()}
+map.on("click",function(e){if(st.scr==="map"&&!st.gps){st.me={la:e.latlng.lat,ln:e.latlng.lng};maybeLoad();render()}else if(st.scr==="add"){st.dr.la=e.latlng.lat;st.dr.ln=e.latlng.lng;render()}});
+$("#ui").addEventListener("click",function(e){var t=e.target.closest("[data-a]");if(!t)return;var a=t.getAttribute("data-a"),b=cur();
+ if(a==="open")go("detail",t.getAttribute("data-id"));
+ else if(a==="back"||a==="tomap")go("map");
+ else if(a==="add"||a==="again")go("add");
+ else if(a==="f"){var k=t.getAttribute("data-k");st.f[k]=st.f[k]?0:1;t.setAttribute("aria-pressed",st.f[k]?"true":"false");refresh()}
+ else if(a==="nav"){st.nav=st.nav?0:1;render()}
+ else if(a==="conf"){if(b.cf)st.msg="Ya confirmaste este baño.";else{b.cf=1;b.k++;st.msg="Gracias por confirmar."+(b.k===3?" Este baño ya figura como verificado.":"");save()}render()}
+ else if(a==="rep"){st.rep=1;render()}
+ else if(a==="rp"){st.rep=0;st.msg="Gracias, tu reporte ayuda a mantener la información al día.";render()}
+ else if(a==="here"){st.dr.la=st.me.la;st.dr.ln=st.me.ln;render()}
+ else if(a==="cost"){st.dr.g=+t.getAttribute("data-v");render()}
+ else if(a==="send")send()});
+$("#ui").addEventListener("input",function(e){var t=e.target;if(t.id==="q"){st.q=t.value;refresh()}else if(st.dr){if(t.id==="nm")st.dr.n=t.value;if(t.id==="to")st.dr.o=t.value;if(t.id==="te")st.dr.e=t.value}});
+$("#ui").addEventListener("change",function(e){if(e.target.id==="ac"&&st.dr)st.dr.a=e.target.checked?1:0});
+render();maybeLoad();locate();
+})();
+</script></body></html>
